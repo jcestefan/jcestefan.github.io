@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="Juan Camilo Estefan">
+    <title>Calculadora Redeban</title>
+
+    <!-- CSS only -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+
+    <!-- Favicons -->
+    <meta name="theme-color" content="#712cf9">
+
+
+    <style>
+        .bd-placeholder-img {
+            font-size: 1.125rem;
+            text-anchor: middle;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            user-select: none;
+        }
+
+        @media (min-width: 768px) {
+            .bd-placeholder-img-lg {
+                font-size: 3.5rem;
+            }
+        }
+
+        .b-example-divider {
+            height: 3rem;
+            background-color: rgba(0, 0, 0, .1);
+            border: solid rgba(0, 0, 0, .15);
+            border-width: 1px 0;
+            box-shadow: inset 0 .5em 1.5em rgba(0, 0, 0, .1), inset 0 .125em .5em rgba(0, 0, 0, .15);
+        }
+
+        .b-example-vr {
+            flex-shrink: 0;
+            width: 1.5rem;
+            height: 100vh;
+        }
+
+        .bi {
+            vertical-align: -.125em;
+            fill: currentColor;
+        }
+
+        .nav-scroller {
+            position: relative;
+            z-index: 2;
+            height: 2.75rem;
+            overflow-y: hidden;
+        }
+
+        .nav-scroller .nav {
+            display: flex;
+            flex-wrap: nowrap;
+            padding-bottom: 1rem;
+            margin-top: -1px;
+            overflow-x: auto;
+            text-align: center;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+        }
+    </style>
+
+    <script>
+        let results = []
+        calculate = () => {
+            const newResults = []
+            const value = document.getElementById("goalValue").value || 0
+            const newValue = value / (1-(0.015+0.00414+0.0299))
+
+            newResults.push({ concept: 'Nuevo valor a cobrar', value: newValue, goal: true })
+            newResults.push({ concept: 'Retención en la fuente 1,5%', value: -newValue * 0.015 })
+            newResults.push({ concept: 'Retención ICA 0,414%', value: -newValue * 0.00414 })
+            newResults.push({ concept: 'Retención el IVA 15%', value: -newValue * 0 })
+            newResults.push({ concept: 'IVA Pagos Redeban 19%', value: -newValue * 0 })
+            newResults.push({ concept: 'Comisión Pagos Redeban 2,99%', value: -newValue * 0.0299 })
+            newResults.push({ concept: 'Tarifa Pagos Redeban $800', value: -newValue * 0 })
+            newResults.push({ concept: 'Total a recibir', value: newResults.reduce((partialSum, a) => partialSum + a.value, 0), goal: true })
+
+            document.getElementById("results").innerHTML = newResults.map(row => (
+                `<li class="list-group-item d-flex justify-content-between lh-sm">
+                    <div class="${row.goal ? 'text-success' : 'text-danger'}">
+                        <h6 class="my-0">${row.concept}</h6>
+                    </div>
+                    <span class="${row.goal ? 'text-success' : 'text-danger'}">${row.value.toLocaleString(undefined, { maximumFractionDigits: 2, minimumFractionDigits: 2})}</span>
+                </li>`
+            )).join('')
+        }
+    </script>
+</head>
+
+<body class="bg-light">
+
+    <div class="container">
+        <main>
+            <div class="py-5 text-center">
+                <h2>Calcualdora Datáfono</h2>
+                <p class="lead">Digite el valor a calcular</p>
+            </div>
+
+            <div class="row g-5">
+                <div class="col-md-5 col-lg-4 order-last">
+                    <h4 class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="text-primary">Estimación</span>
+                    </h4>
+                    <ul id="results" class="list-group mb-3">
+                    </ul>
+                </div>
+                <div class="col-md-7 col-lg-8">
+                    <h4 class="mb-3">Valor que se quiere obtener</h4>
+                    <form class="needs-validation" novalidate>
+                        <div class="row g-3">
+                            <div oninput="calculate()" class="col-12">
+                                <label for="goalValue" class="form-label">Valor objetivo</label>
+                                <input type="number" class="form-control" id="goalValue"
+                                    required>
+                                <div class="invalid-feedback">
+                                    Digita el valor objetivo
+                                </div>
+                            </div>
+
+                        <!-- <hr class="my-4">
+
+                        <h4 class="mb-3">Tipo de pago (no funcional por el momento)</h4>
+
+                        <div class="my-3">
+                            <div class="form-check">
+                                <input id="credit" name="paymentMethod" type="radio" class="form-check-input" checked
+                                    required>
+                                <label class="form-check-label" for="credit">Tarjeta de crédito</label>
+                            </div>
+                            <div class="form-check">
+                                <input id="debit" name="paymentMethod" type="radio" class="form-check-input" required>
+                                <label class="form-check-label" for="debit">Tarjeta débito</label>
+                            </div>
+                            <div class="form-check">
+                                <input id="paypal" name="paymentMethod" type="radio" class="form-check-input" required>
+                                <label class="form-check-label" for="paypal">Otro</label>
+                            </div>
+                        </div> -->
+                    </form>
+                </div>
+            </div>
+        </main>
+
+        <footer class="my-5 pt-5 text-muted text-center text-small">
+            <p class="mb-1">&copy; 2022 Calculadora Datáfono</p>
+        </footer>
+    </div>
+    <script>
+        calculate()
+    </script>
+</body>
+
+</html>
